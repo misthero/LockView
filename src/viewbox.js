@@ -3,7 +3,7 @@ import { getFlags, excludeSidebar, blackenSidebar } from "./blocks.js";
 import * as VIEWBOX from "./viewbox.js";
 import { moduleName } from "../lockview.js";
 
-export var viewboxStorage; 
+export var viewboxStorage;
 export var viewbox = [];
 
 /*
@@ -46,8 +46,8 @@ export class Viewbox extends CanvasLayer {
     const x = data.x - Math.floor(data.width / 2);
     const y = data.y - Math.floor(data.height / 2);
 
-    this.moveLocation = {x:x-20, y:y-20};
-    this.scaleLocation = {x:x+data.width+20, y:y+data.height+20};
+    this.moveLocation = { x: x - 20, y: y - 20 };
+    this.scaleLocation = { x: x + data.width + 20, y: y + data.height + 20 };
     this.boxWidth = data.width;
     this.boxHeight = data.height;
     this.boxColor = data.color;
@@ -59,68 +59,74 @@ export class Viewbox extends CanvasLayer {
 
     this.container.removeChildren();
     var drawing = new PIXI.Graphics();
-    drawing.lineStyle(2, data.color, 1);
-    drawing.drawRect(0,0,data.width,data.height);
+    drawing.lineStyle(7, data.color, 1);
+    drawing.drawRect(0, 0, data.width, data.height);
     this.container.addChild(drawing);
 
-    if (canvas.scene.getFlag('LockView', 'editViewbox')){
+    if (canvas.scene.getFlag('LockView', 'editViewbox')) {
+      console.log(canvas.scene);
+      const grid_size = canvas.scene.grid.size;
+      const current_scale = canvas.scene._viewPosition.scale;
+      const scale_factor = 2.6;
+      let icons_size = (grid_size / current_scale) / scale_factor;
       this.moveOffset = 0;
       this.scaleOffset = 0;
       //Check if the location of the moveButton and scaleButton is already occupied by another button
-      if (data.controlBtn != true)
-        for (let i=0; i<VIEWBOX.viewbox.length; i++){
-          
+      if (data.controlBtn != true) {
+        /*for (let i = 0; i < VIEWBOX.viewbox.length; i++) {
+
           const viewbox = VIEWBOX.viewbox[i];
           if (viewbox == undefined || viewbox.boxName == data.name) continue;
-          
+
           if (Math.abs(viewbox.moveLocation.x - this.moveLocation.x) <= 40 && Math.abs(viewbox.moveLocation.y - this.moveLocation.y) <= 40) {
-            this.moveOffset += 50-Math.abs(viewbox.moveLocation.y - this.moveLocation.y);
-            this.moveLocation.y += 50-Math.abs(viewbox.moveLocation.y - this.moveLocation.y);
+            this.moveOffset += 50 - Math.abs(viewbox.moveLocation.y - this.moveLocation.y);
+            this.moveLocation.y += 50 - Math.abs(viewbox.moveLocation.y - this.moveLocation.y);
           }
           if (Math.abs(viewbox.scaleLocation.x - this.moveLocation.x) <= 40 && Math.abs(viewbox.scaleLocation.y - this.moveLocation.y) <= 40) {
-            this.moveOffset += 50-Math.abs(viewbox.scaleLocation.y - this.moveLocation.y);
-            this.moveLocation.y += 50-Math.abs(viewbox.scaleLocation.y - this.moveLocation.y);
+            this.moveOffset += 50 - Math.abs(viewbox.scaleLocation.y - this.moveLocation.y);
+            this.moveLocation.y += 50 - Math.abs(viewbox.scaleLocation.y - this.moveLocation.y);
           }
 
           if (Math.abs(viewbox.moveLocation.x - this.scaleLocation.x) <= 40 && Math.abs(viewbox.moveLocation.y - this.scaleLocation.y) <= 40) {
-            this.scaleOffset -= 50-Math.abs(viewbox.moveLocation.y - this.scaleLocation.y);
-            this.scaleLocation.y -= 50-Math.abs(viewbox.moveLocation.y - this.scaleLocation.y);
+            this.scaleOffset -= 50 - Math.abs(viewbox.moveLocation.y - this.scaleLocation.y);
+            this.scaleLocation.y -= 50 - Math.abs(viewbox.moveLocation.y - this.scaleLocation.y);
           }
           if (Math.abs(viewbox.scaleLocation.x - this.scaleLocation.x) <= 40 && Math.abs(viewbox.scaleLocation.y - this.scaleLocation.y) <= 40) {
-            this.scaleOffset -= 50-Math.abs(viewbox.scaleLocation.y - this.scaleLocation.y);
-            this.scaleLocation.y -= 50-Math.abs(viewbox.scaleLocation.y - this.scaleLocation.y);
+            this.scaleOffset -= 50 - Math.abs(viewbox.scaleLocation.y - this.scaleLocation.y);
+            this.scaleLocation.y -= 50 - Math.abs(viewbox.scaleLocation.y - this.scaleLocation.y);
           }
-        }
-
+        }*/
+      }
       var drawingCircles = new PIXI.Graphics();
       drawingCircles.lineStyle(2, data.color, 1);
       drawingCircles.beginFill(data.color);
-      drawingCircles.drawCircle(-20,-20+this.moveOffset,20);
-      drawingCircles.drawCircle(data.width+20,data.height+20+this.scaleOffset,20);
+      drawingCircles.drawCircle(-20, -20 + this.moveOffset, icons_size);
+      drawingCircles.drawCircle(data.width + 20, data.height + 20 + this.scaleOffset, icons_size);
       this.container.addChild(drawingCircles);
 
+      /* MOVE ICON */
       var moveIcon = PIXI.Sprite.from('modules/LockView/img/icons/arrows-alt-solid.png');
       moveIcon.anchor.set(0.5);
-      moveIcon.scale.set(0.25);
-      moveIcon.position.set(-20,-20+this.moveOffset)
+      moveIcon.scale.set(1 / current_scale / scale_factor);
+      moveIcon.position.set(-20, -20 + this.moveOffset)
       this.container.addChild(moveIcon);
 
       var scaleIcon = PIXI.Sprite.from('modules/LockView/img/icons/compress-arrows-alt-solid.png');
       scaleIcon.anchor.set(0.5);
-      scaleIcon.scale.set(0.20);
-      scaleIcon.position.set(data.width+20,data.height+20+this.scaleOffset)
+      scaleIcon.scale.set(1 / current_scale / (scale_factor + 0.6));
+      scaleIcon.position.set(data.width + 20, data.height + 20 + this.scaleOffset)
       this.container.addChild(scaleIcon);
     }
-      
-    var label = new PIXI.Text(data.name, {fontFamily : 'Arial', fontSize: 24, fontWeight : 'bold', fill : data.color, align : 'center'});
+
+    var label = new PIXI.Text(data.name, { fontFamily: 'Arial', fontSize: 24, fontWeight: 'bold', fill: data.color, align: 'center' });
     label.anchor.set(0.5);
-    label.position.set(data.width / 2,-15)
+    label.position.set(data.width / 2, -15)
     this.container.addChild(label);
-    
-    this.container.setTransform(x+(data.width/2), y+(data.height/2), 1, 1, data.rotation, 0, 0, (data.width/2), (data.height/2));
+
+    this.container.setTransform(x + (data.width / 2), y + (data.height / 2), 1, 1, data.rotation, 0, 0, (data.width / 2), (data.height / 2));
     this.container.visible = true;
   }
-  
+
   /*
    * Hide the viewbox
    */
@@ -146,28 +152,28 @@ export class Viewbox extends CanvasLayer {
 /*
  * Find the correct values for the viewbox, and update the viewbox
  */
-export function drawViewbox(payload){
-  let overrideSetting = game.settings.get(moduleName ,'userSettingsOverrides')[game.user.role].control;
-  let userSetting = game.settings.get(moduleName,'userSettings').filter(u => u.id == game.user.id)[0].control;
+export function drawViewbox(payload) {
+  let overrideSetting = game.settings.get(moduleName, 'userSettingsOverrides')[game.user.role].control;
+  let userSetting = game.settings.get(moduleName, 'userSettings').filter(u => u.id == game.user.id)[0].control;
   if ((overrideSetting == false || overrideSetting == undefined) && (userSetting == false || userSetting == undefined) && (game.user.isGM == false || mouseMode != null)) return;
 
   viewboxStorage = payload;
-  if(game.settings.get("LockView","viewbox")){
+  if (game.settings.get("LockView", "viewbox")) {
     let senderNumber;
     let senderNumbers = Array.from(game.users);
     //get index of the sending user
-    for (let i=0; i<senderNumbers.length; i++)
+    for (let i = 0; i < senderNumbers.length; i++)
       if (senderNumbers[i]._id == payload.senderId)
         senderNumber = i;
     //check if sending user is in same scene, if not, hide viewbox and return
     if (payload.sceneId != canvas.scene.id) {
-      if(viewbox[senderNumber] != undefined)
+      if (viewbox[senderNumber] != undefined)
         viewbox[senderNumber].hide();
       return;
     }
-    
+
     //If viewbox doesn't exist for player, create it
-    if (viewbox[senderNumber] == undefined){
+    if (viewbox[senderNumber] == undefined) {
       viewbox[senderNumber] = new Viewbox();
       canvas.stage.addChild(viewbox[senderNumber]);
       viewbox[senderNumber].init();
@@ -179,8 +185,8 @@ export function drawViewbox(payload){
         y: payload.viewPosition.y,
         scale: payload.viewPosition.scale,
         currentPosition: payload.currentPosition,
-        width: payload.viewWidth/payload.viewPosition.scale,
-        height: payload.viewHeight/payload.viewPosition.scale,
+        width: payload.viewWidth / payload.viewPosition.scale,
+        height: payload.viewHeight / payload.viewPosition.scale,
         rotation: payload.viewRotation,
         color: parseInt(payload.senderColor.replace(/^#/, ''), 16),
         name: payload.senderName,
@@ -194,9 +200,9 @@ export function drawViewbox(payload){
 /*
  * Hide all viewboxes
  */
-export function hideAllViewboxes(){
+export function hideAllViewboxes() {
   if (game.user.isGM) {
-    for (let i=0; i< viewbox.length; i++)
+    for (let i = 0; i < viewbox.length; i++)
       if (viewbox[i] != undefined)
         viewbox[i].hide();
   }
@@ -205,9 +211,9 @@ export function hideAllViewboxes(){
 /*
  * Initialize viewboxes
  */
-export function initializeViewboxes(users){
-  for (let i=0; i<users.length; i++){
-    if(viewbox[i] == undefined){
+export function initializeViewboxes(users) {
+  for (let i = 0; i < users.length; i++) {
+    if (viewbox[i] == undefined) {
       viewbox[i] = new Viewbox();
       canvas.stage.addChild(viewbox[i]);
       viewbox[i].init();
@@ -218,9 +224,9 @@ export function initializeViewboxes(users){
 /*
  * Returns whether the viewbox is enabled for a user
  */
-export function getViewboxEnable(userId){
-  const settings = game.settings.get("LockView","userSettings");
-  const settingsOverride = game.settings.get("LockView","userSettingsOverrides");
+export function getViewboxEnable(userId) {
+  const settings = game.settings.get("LockView", "userSettings");
+  const settingsOverride = game.settings.get("LockView", "userSettingsOverrides");
   const user = game.users.get(userId);
 
   //if user is undefined, return false
@@ -230,12 +236,12 @@ export function getViewboxEnable(userId){
   if (settingsOverride[user.role]?.viewbox) return true;
 
   //Check if the userId matches an existing id in the settings array
-  for (let i=0; i<settings.length; i++)
+  for (let i = 0; i < settings.length; i++)
     if (settings[i].id == userId) return settings[i].viewbox;
 
   //Else return true for new players, return false for new GMs
   const userList = game.users.entries;
-  for (let i=0; i<userList.length; i++){
+  for (let i = 0; i < userList.length; i++) {
     if (userList[i]._id == userId && userList[i].role != 4)
       return true;
   }
@@ -245,11 +251,11 @@ export function getViewboxEnable(userId){
 /*
  * Send viewbox data to the GM to draw the viewbox
  */
-export function sendViewBox(viewPosition=null){
-  if (getViewboxEnable(game.userId)==false) return;
+export function sendViewBox(viewPosition = null) {
+  if (getViewboxEnable(game.userId) == false) return;
   if (canvas.scene == null || canvas.scene == undefined) return;
-  if (viewPosition == null) viewPosition=canvas.scene._viewPosition;
-  
+  if (viewPosition == null) viewPosition = canvas.scene._viewPosition;
+
   //get all flags
   getFlags();
 
@@ -262,20 +268,20 @@ export function sendViewBox(viewPosition=null){
 
   //Sidebar offset
   let offset = 0;
-  if (ui.sidebar._collapsed == false && excludeSidebar && blackenSidebar){
+  if (ui.sidebar._collapsed == false && excludeSidebar && blackenSidebar) {
     offset = ui.sidebar.position.width;
-    viewPositionNew.x -= offset/(2*viewPosition.scale);
+    viewPositionNew.x -= offset / (2 * viewPosition.scale);
   }
 
   const payload = {
     "msgType": "viewbox",
-    "senderId": game.userId, 
+    "senderId": game.userId,
     "senderName": game.user.name,
     "senderColor": game.user.color,
-    "receiverId": game.data.users.find(users => users.role == 4)._id, 
+    "receiverId": game.data.users.find(users => users.role == 4)._id,
     "sceneId": canvas.scene.id,
     "viewPosition": viewPositionNew,
-    "viewWidth": window.innerWidth-offset,
+    "viewWidth": window.innerWidth - offset,
     "viewHeight": window.innerHeight,
     "viewRotation": canvas.stage.rotation,
     "currentPosition": viewPosition
@@ -286,10 +292,10 @@ export function sendViewBox(viewPosition=null){
 /*
  * Request viewbox data from connected users
  */
-export function getViewboxData(){
-    let payload = {
-      "msgType": "getViewboxData",
-      "senderId": game.userId
-    };
-    game.socket.emit(`module.LockView`, payload);
+export function getViewboxData() {
+  let payload = {
+    "msgType": "getViewboxData",
+    "senderId": game.userId
+  };
+  game.socket.emit(`module.LockView`, payload);
 }

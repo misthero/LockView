@@ -1,9 +1,9 @@
 {
     "id": "LockView",
-    "name": "LockView",
-    "title": "Lock View",
+    "name": "LockView Modded",
+    "title": "Lock View Modded",
     "description": "Locks the view of players by enabling the GM to block zooming and panning. The module also gives control over the player view, allowing the GM to zoom and pan. Developed for the purpose of play on a digital playmat, such as a horizontally mounted TV, and for that purpose the module can scale the scene so the gridsize is always displayed corresponding to a real-world size.",
-    "version": "1.5.9",
+    "version": "2.5.9-mod",
     "author": "CDeenen",
     "authors": [
         {

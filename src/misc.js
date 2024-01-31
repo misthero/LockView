@@ -5,12 +5,12 @@ import { sendFlagUpdate, sendSettingUpdate } from "./socket.js";
 export function compareVersions(checkedVersion, requiredVersion) {
   requiredVersion = requiredVersion.split(".");
   checkedVersion = checkedVersion.split(".");
-  
-  for (let i=0; i<3; i++) {
+
+  for (let i = 0; i < 3; i++) {
     requiredVersion[i] = isNaN(parseInt(requiredVersion[i])) ? 0 : parseInt(requiredVersion[i]);
     checkedVersion[i] = isNaN(parseInt(checkedVersion[i])) ? 0 : parseInt(checkedVersion[i]);
   }
-  
+
   if (checkedVersion[0] > requiredVersion[0]) return false;
   if (checkedVersion[0] < requiredVersion[0]) return true;
   if (checkedVersion[1] > requiredVersion[1]) return false;
@@ -19,7 +19,7 @@ export function compareVersions(checkedVersion, requiredVersion) {
   return true;
 }
 
-export function compatibleCore(compatibleVersion){
+export function compatibleCore(compatibleVersion) {
   const split = compatibleVersion.split(".");
   if (split.length == 2) compatibleVersion = `0.${compatibleVersion}`;
   let coreVersion = game.version == undefined ? game.data.version : `0.${game.version}`;
@@ -47,7 +47,7 @@ export async function setLockView(data) {
     await updateBoundingBox(enable);
   }
   if (data.viewbox != undefined) {
-    if (data.viewbox == 'toggle') enable = !game.settings.get("LockView","viewbox");
+    if (data.viewbox == 'toggle') enable = !game.settings.get("LockView", "viewbox");
     else enable = data.viewbox;
     ui.controls.controls.find(controls => controls.name == "LockView").tools.find(tools => tools.name == "Viewbox").active = enable;
     await viewbox(enable);
@@ -56,6 +56,7 @@ export async function setLockView(data) {
   if (data.editViewbox != undefined) {
     if (data.editViewbox == 'toggle') enable = !canvas.scene.getFlag('LockView', 'editViewbox');
     else enable = data.editViewbox;
+    //updateFlag('editViewbox', false);
     await editViewboxConfig(ui.controls.controls);
   }
 }
@@ -63,9 +64,9 @@ export async function setLockView(data) {
 /*
  * Get whether the module is enabled for the user
  */
-export function getEnable(userId){
-  const settings = game.settings.get("LockView","userSettings");
-  const settingsOverride = game.settings.get("LockView","userSettingsOverrides");
+export function getEnable(userId) {
+  const settings = game.settings.get("LockView", "userSettings");
+  const settingsOverride = game.settings.get("LockView", "userSettingsOverrides");
   const user = game.users.get(userId);
 
   //if user is undefined, return false
@@ -75,19 +76,19 @@ export function getEnable(userId){
   if (settingsOverride[user.role]?.enable) return true;
 
   //Check if the userId matches an existing id in the settings array
-  for (let i=0; i<settings.length; i++)
+  for (let i = 0; i < settings.length; i++)
     if (settings[i].id == userId) return settings[i].enable;
 
   //Else return true for new players, return false for new GMs
   const userList = game.users.entries;
-  for (let i=0; i<userList.length; i++){
+  for (let i = 0; i < userList.length; i++) {
     if (userList[i]._id == userId && userList[i].role != 4)
       return true;
   }
   return false;
 }
 
-export function updatePopup(){
+export function updatePopup() {
   /*
   if (game.settings.get("LockView","updatePopupV1.4.3") == false && game.user.isGM) {
     let d = new Dialog({
@@ -123,7 +124,7 @@ export function updatePopup(){
 /*
  * Blacken or remove blackening of the sidebar background
  */
-export function blackSidebar(en){
+export function blackSidebar(en) {
   if (en) document.getElementById("sidebar").style.backgroundColor = "black";
   else document.getElementById("sidebar").style.backgroundColor = "";
 }

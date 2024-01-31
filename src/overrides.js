@@ -10,7 +10,6 @@ import { getEnable } from "./misc.js";
     let boxDefined = false;                         //Whether a bounding box has been drawn
     let bound = {Xmin:0,Xmax:0,Ymin:0,Ymax:0};      //Stores the bounding box values
     let rect = {Xmin:0,Xmax:0,Ymin:0,Ymax:0};       //Stores the bounding rectangle values
-    let scaleChange = false;                        //Checks if the scale must be changed
     let drawings = canvas.scene.drawings.contents;      //The drawings on the canvas
     let scaleMin;                                   //The minimum acceptable scale
     let controlledTokens = [];                      //Array or tokens that are controlled by the user
